@@ -15,7 +15,7 @@ const mapStateToProps = state => {
 
 function RenderItem(props) {
     const { item } = props;
-    console.log(props)
+    // console.log(props)
 
     if (props.isLoading) {
         return <Loading />;
