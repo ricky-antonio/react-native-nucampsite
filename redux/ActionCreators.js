@@ -145,7 +145,7 @@ export const addPartners = partners => ({
 export const postFavorite = campsiteId => dispatch => {
     setTimeout(() => {
         dispatch(addFavorite(campsiteId));
-    }, 200);
+    }, 2);
 };
 
 export const addFavorite = campsiteId => ({
