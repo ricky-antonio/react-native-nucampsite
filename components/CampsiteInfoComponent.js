@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList, Modal, Button, StyleSheet } from 'react-native';
+import {
+    Text, View, ScrollView, FlatList, Modal,
+    Button, StyleSheet, Alert, PanResponder
+} from 'react-native';
 import { Card, Icon, Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
@@ -23,11 +26,44 @@ const mapDispatchToProps = {
 
 function RenderCampsite(props) {
 
+    const recognizeDrag = ({ dx }) => (dx < -200) ? true : false;
+
+    const panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderEnd: (e, gestureState) => {
+            console.log('pan responder end', gestureState);
+            if (recognizeDrag(gestureState)) {
+                Alert.alert(
+                    'Add Favorite',
+                    `Are you sure you wish to add ${campsite.name} to favorites?`,
+                    [
+                        {
+                            text: 'Cancel',
+                            style: 'cancel',
+                            onPress: () => console.log('cancel pressed')
+                        },
+                        {
+                            text: 'OK',
+                            onPress: () => props.favorite ? console.log('Already in favorites') : props.markFavorite()
+                        },
+                    ],
+                    { cancelable: false }
+                );
+            }
+            return true;
+        }
+    });
+
     const { campsite, favorite, markFavorite } = props;
 
     if (campsite) {
         return (
-            <Animatable.View animation='fadeInDown' duration={2000} delay={1000}>
+            <Animatable.View 
+                animation='fadeInDown' 
+                duration={2000} 
+                delay={1000}
+                {...panResponder.panHandlers}
+                >
                 <Card
                     featuredTitle={campsite.name}
                     image={{ uri: baseUrl + campsite.image }}
@@ -78,7 +114,11 @@ function RenderComments({ comments }) {
     }
 
     return (
-        <Animatable.View animation='fadeInUp' duration={2000} delay={1000}>
+        <Animatable.View 
+            animation='fadeInUp' 
+            duration={2000} 
+            delay={1000}
+        >
             <Card title='Comments'>
                 <FlatList
                     data={comments}
